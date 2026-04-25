@@ -5,29 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Student class demonstrating:
- * - Inheritance (extends Person)
- * - Part of sealed class hierarchy (final prevents further extension)
- * - super() vs super. usage
- * - Method overriding
- * - Polymorphism
- * - Implementing multiple interfaces
- * - Method overloading
- * - Varargs
- * - Defensive copying
- * 
- * OOP Features Demonstrated:
- * - Inheritance
- * - super() vs super.
- * - Overriding
- * - Polymorphism
- * - Interfaces implementation
- * - Method overloading
- * - Varargs
- * - Defensive copying
- * - ArrayList usage
+ * Student — a final class in the sealed Person hierarchy.
+ *
+ * OOP2 Feature (JEP 513): In Java 25, constructor bodies can contain
+ * statements BEFORE super() for pre-validation. In Java 21 (this build),
+ * super() must remain first; the same validation logic is placed immediately
+ * after super() to demonstrate the intent. See comments marked [JEP 513].
  */
 public final class Student extends Person implements Enrollable, Gradeable {
+
     private String studentId;
     private DepartmentType major;
     private List<Grade> grades;
@@ -37,176 +23,111 @@ public final class Student extends Person implements Enrollable, Gradeable {
     private static int studentCounter = 0;
 
     /**
-     * Constructor demonstrating super() - calling parent constructor
-     * super() must be the first statement in constructor
+     * OOP2 — JEP 513 Flexible Constructor Bodies (Java 25).
+     *
+     * Java 25 would allow:
+     *   // PRE-super validation:
+     *   if (firstName == null || firstName.isBlank()) throw ...
+     *   String normFirst = firstName.trim()...
+     *   super(normFirst, normLast, email.toLowerCase());
+     *
+     * Java 21 equivalent shown here (same logic, after super):
      */
     public Student(String firstName, String lastName, String email, DepartmentType major) {
-        super(firstName, lastName, email);  // super() calls parent constructor
-        this.studentId = generateStudentId();
-        this.major = major;
-        this.grades = new ArrayList<>();
+        super(firstName != null ? firstName.trim() : firstName,
+              lastName  != null ? lastName.trim()  : lastName,
+              email     != null ? email.trim().toLowerCase() : null);
+
+        // [JEP 513] In Java 25 these checks would run BEFORE super()
+        if (firstName == null || firstName.isBlank())
+            throw new IllegalArgumentException("Student first name cannot be blank");
+        if (lastName == null || lastName.isBlank())
+            throw new IllegalArgumentException("Student last name cannot be blank");
+        if (major == null)
+            throw new IllegalArgumentException("Major cannot be null");
+
+        // Normalise capitalisation (in Java 25 this would happen pre-super)
+        String normFirst = getFirstName().substring(0, 1).toUpperCase()
+                + getFirstName().substring(1).toLowerCase();
+        String normLast  = getLastName().substring(0, 1).toUpperCase()
+                + getLastName().substring(1).toLowerCase();
+        setFirstName(normFirst);
+        setLastName(normLast);
+
+        this.studentId      = generateStudentId();
+        this.major          = major;
+        this.grades         = new ArrayList<>();
         this.enrollmentDate = LocalDate.now();
-        this.gpa = 0.0;
-        this.active = true;
+        this.gpa            = 0.0;
+        this.active         = true;
     }
 
-    /**
-     * Overloaded constructor with more parameters
-     */
-    public Student(String firstName, String lastName, String email, 
+    public Student(String firstName, String lastName, String email,
                    String phone, LocalDate dateOfBirth, DepartmentType major) {
-        super(firstName, lastName, email, phone, dateOfBirth);  // super() with all params
-        this.studentId = generateStudentId();
-        this.major = major;
-        this.grades = new ArrayList<>();
+        super(firstName, lastName, email, phone, dateOfBirth);
+
+        // [JEP 513] In Java 25 these checks would run BEFORE super()
+        if (dateOfBirth != null && dateOfBirth.isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("Date of birth cannot be in the future");
+        if (major == null)
+            throw new IllegalArgumentException("Major cannot be null");
+
+        this.studentId      = generateStudentId();
+        this.major          = major;
+        this.grades         = new ArrayList<>();
         this.enrollmentDate = LocalDate.now();
-        this.gpa = 0.0;
-        this.active = true;
+        this.gpa            = 0.0;
+        this.active         = true;
     }
 
-    /**
-     * Method demonstrating super. to access parent class method
-     * super. accesses parent class members
-     */
+    @Override public String getRole() { return "Student"; }
+
     public String getDetailedInfo() {
-        // super. calls parent class method
-        String parentInfo = super.toString();
-        return String.format("%s, Student ID: %s, Major: %s, GPA: %.2f", 
-            parentInfo, studentId, major, gpa);
+        return super.toString() + ", Student ID: " + studentId
+                + ", Major: " + major + ", GPA: " + String.format("%.2f", gpa);
     }
 
-    /**
-     * Method using super. to access parent method
-     */
-    public String getFullStudentName() {
-        return "Student: " + super.getFullName();  // super. calls parent method
-    }
-
-    /**
-     * Override parent method - demonstrating polymorphism and overriding
-     * @Override annotation ensures we're actually overriding
-     */
-    @Override
-    public String getRole() {
-        return "Student";
-    }
-
-    /**
-     * Method overloading - same method name, different parameters
-     * Adds a single grade
-     */
+    // varargs — OOP1 feature
     public void addGrade(Grade grade) {
-        if (grade == null) {
-            throw new IllegalArgumentException("Grade cannot be null");
-        }
+        if (grade == null) throw new IllegalArgumentException("Grade cannot be null");
         grades.add(grade);
         calculateGPA();
     }
 
-    /**
-     * Overloaded method - adds multiple grades using varargs
-     * Demonstrates varargs (variable arguments)
-     */
-    public void addGrade(Grade... newGrades) {  // Varargs - takes 0 or more Grade objects
-        for (Grade grade : newGrades) {
-            if (grade != null) {
-                grades.add(grade);
-            }
-        }
+    public void addGrade(Grade... newGrades) {
+        for (Grade g : newGrades) if (g != null) grades.add(g);
         calculateGPA();
     }
 
-    /**
-     * Overloaded method - adds grades from a list
-     */
     public void addGrade(List<Grade> newGrades) {
-        if (newGrades != null) {
-            grades.addAll(newGrades);
-            calculateGPA();
-        }
+        if (newGrades != null) { grades.addAll(newGrades); calculateGPA(); }
     }
 
-    /**
-     * Add loyalty points (placeholder for demonstration)
-     */
-    public void addLoyaltyPoints(double points) {
-        // This is a placeholder method for call-by-value demonstration
-        // In a real system, this would track student loyalty/reward points
-    }
-
-    /**
-     * Calculates GPA from grades
-     */
     private void calculateGPA() {
-        if (grades.isEmpty()) {
-            this.gpa = 0.0;
-            return;
-        }
-        
-        double totalPoints = 0.0;
-        for (Grade grade : grades) {
-            totalPoints += grade.getGradePoint();
-        }
-        
-        this.gpa = Math.round((totalPoints / grades.size()) * 100.0) / 100.0;
+        if (grades.isEmpty()) { this.gpa = 0.0; return; }
+        double total = grades.stream().mapToDouble(Grade::getGradePoint).sum();
+        this.gpa = Math.round((total / grades.size()) * 100.0) / 100.0;
     }
 
-    /**
-     * Generate unique student ID
-     */
     private static String generateStudentId() {
         return "STU" + String.format("%05d", ++studentCounter);
     }
 
-    // Implementing Enrollable interface
-    @Override
-    public String getEnrollmentId() {
-        return studentId;
-    }
+    @Override public String getEnrollmentId()     { return studentId; }
+    @Override public LocalDate getEnrollmentDate() { return enrollmentDate; }
+    @Override public boolean isActive()            { return active; }
+    @Override public double getGPA()               { return gpa; }
+    @Override public List<Grade> getGrades()       { return new ArrayList<>(grades); }
 
-    @Override
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
-    }
-
-    @Override
-    public boolean isActive() {
-        return active;
-    }
-
-    // Implementing Gradeable interface
-    @Override
-    public double getGPA() {
-        return gpa;
-    }
-
-    @Override
-    public List<Grade> getGrades() {
-        // Defensive copying - return a copy to prevent external modification
-        // Demonstrates call-by-value and defensive copying
-        return new ArrayList<>(grades);
-    }
-
-    // Getters and setters
-    public String getStudentId() {
-        return studentId;
-    }
-
-    public DepartmentType getMajor() {
-        return major;
-    }
-
-    public void setMajor(DepartmentType major) {
-        this.major = major;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+    public String getStudentId()            { return studentId; }
+    public DepartmentType getMajor()        { return major; }
+    public void setMajor(DepartmentType m)  { this.major = m; }
+    public void setActive(boolean active)   { this.active = active; }
+    public void addLoyaltyPoints(double p)  {}
 
     @Override
     public String toString() {
-        return String.format("Student{id='%s', name='%s', major=%s, gpa=%.2f}", 
-            studentId, getFullName(), major, gpa);
+        return String.format("Student{id='%s', name='%s', major=%s, gpa=%.2f}",
+                studentId, getFullName(), major, gpa);
     }
 }

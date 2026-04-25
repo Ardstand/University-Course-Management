@@ -1,0 +1,12 @@
+# Sample student import data for NIO2 demo
+# Format: firstName,lastName,email,departmentCode
+Alice,Murphy,alice.murphy@student.tus.ie,CS
+Liam,Brien,liam.obrien@student.tus.ie,MATH
+Priya,Sharma,priya.sharma@student.tus.ie,ENG
+James,Walsh,james.walsh@student.tus.ie,CS
+Aoife,Kelly,aoife.kelly@student.tus.ie,BUS
+Rohan,Patel,rohan.patel@student.tus.ie,CS
+Sophie,Ryan,sophie.ryan@student.tus.ie,ARTS
+Daniel,Byrne,daniel.byrne@student.tus.ie,MATH
+Mei,Zhang,mei.zhang@student.tus.ie,ENG
+Connor,Doyle,connor.doyle@student.tus.ie,CS

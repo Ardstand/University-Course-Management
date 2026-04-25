@@ -5,131 +5,98 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Instructor class demonstrating:
- * - Inheritance from sealed Person class
- * - Final class (cannot be extended further)
- * - super() and super. usage
- * - Method overriding
- * - Arrays
- * 
- * OOP Features Demonstrated:
- * - Inheritance
- * - Final class
- * - Overriding
- * - Arrays
- * - Defensive copying
+ * Instructor — a final class in the sealed Person hierarchy.
+ *
+ * OOP2 Feature (JEP 513): In Java 25, validation runs BEFORE super().
+ * In Java 21 (this build), super() is first and validation follows.
+ * See [JEP 513] comments for what the Java 25 form would look like.
  */
 public final class Instructor extends Person {
+
     private String instructorId;
     private DepartmentType department;
-    private String[] officeHours;  // Array demonstration
+    private String[] officeHours;
     private List<String> coursesTaught;
     private double salary;
     private static int instructorCounter = 0;
 
     /**
-     * Constructor using super()
+     * OOP2 — JEP 513 Flexible Constructor Bodies (Java 25).
+     *
+     * Java 25 would allow:
+     *   // PRE-super validation:
+     *   if (department == null) throw ...
+     *   if (salary < 0) throw ...
+     *   String normEmail = email.trim().toLowerCase();
+     *   super(firstName, lastName, normEmail);
+     *
+     * Java 21 equivalent shown here:
      */
-    public Instructor(String firstName, String lastName, String email, 
+    public Instructor(String firstName, String lastName, String email,
                      DepartmentType department, double salary) {
-        super(firstName, lastName, email);  // super() calls parent constructor
-        this.instructorId = generateInstructorId();
-        this.department = department;
-        this.salary = salary;
-        this.officeHours = new String[0];  // Initialize empty array
+        super(firstName, lastName, email != null ? email.trim().toLowerCase() : null);
+
+        // [JEP 513] In Java 25 these checks would run BEFORE super()
+        if (department == null)
+            throw new IllegalArgumentException("Instructor department cannot be null");
+        if (salary < 0)
+            throw new IllegalArgumentException("Salary cannot be negative");
+
+        this.instructorId  = generateInstructorId();
+        this.department    = department;
+        this.salary        = salary;
+        this.officeHours   = new String[0];
         this.coursesTaught = new ArrayList<>();
     }
 
-    /**
-     * Full constructor
-     */
-    public Instructor(String firstName, String lastName, String email, 
+    public Instructor(String firstName, String lastName, String email,
                      String phone, LocalDate dateOfBirth,
                      DepartmentType department, double salary) {
-        super(firstName, lastName, email, phone, dateOfBirth);
-        this.instructorId = generateInstructorId();
-        this.department = department;
-        this.salary = salary;
-        this.officeHours = new String[0];
+        super(firstName, lastName,
+              email != null ? email.trim().toLowerCase() : null,
+              phone, dateOfBirth);
+
+        // [JEP 513] In Java 25 these checks would run BEFORE super()
+        if (department == null)
+            throw new IllegalArgumentException("Instructor department cannot be null");
+        if (salary < 0)
+            throw new IllegalArgumentException("Salary cannot be negative");
+
+        this.instructorId  = generateInstructorId();
+        this.department    = department;
+        this.salary        = salary;
+        this.officeHours   = new String[0];
         this.coursesTaught = new ArrayList<>();
     }
 
-    /**
-     * Override parent method
-     */
     @Override
-    public String getRole() {
-        return "Instructor - " + department.getFullName();
-    }
+    public String getRole() { return "Instructor - " + department.getFullName(); }
 
-    /**
-     * Method using super. to access parent method
-     */
     public String getInstructorProfile() {
         return super.getFullName() + " - " + department.getCode() + " Department";
     }
 
-    /**
-     * Set office hours using array
-     * Demonstrates working with arrays
-     */
-    public void setOfficeHours(String... hours) {  // Varargs converted to array
-        this.officeHours = hours;
-    }
+    public void setOfficeHours(String... hours) { this.officeHours = hours; }
+    public String[] getOfficeHours()             { return officeHours.clone(); }
 
-    /**
-     * Get office hours with defensive copying
-     * Demonstrates defensive copying for arrays
-     */
-    public String[] getOfficeHours() {
-        // Defensive copy - clone the array
-        return officeHours.clone();
-    }
-
-    /**
-     * Add a course to teaching list
-     */
     public void addCourse(String courseCode) {
-        if (!coursesTaught.contains(courseCode)) {
-            coursesTaught.add(courseCode);
-        }
-    }
-
-    /**
-     * Get courses with defensive copying
-     */
-    public List<String> getCoursesTaught() {
-        return new ArrayList<>(coursesTaught);
+        if (!coursesTaught.contains(courseCode)) coursesTaught.add(courseCode);
     }
 
     private static String generateInstructorId() {
         return "INS" + String.format("%05d", ++instructorCounter);
     }
 
-    // Getters and setters
-    public String getInstructorId() {
-        return instructorId;
-    }
-
-    public DepartmentType getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(DepartmentType department) {
-        this.department = department;
-    }
-
-    public double getSalary() {
-        return salary;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
+    public String getInstructorId()             { return instructorId; }
+    public DepartmentType getDepartment()       { return department; }
+    public void setDepartment(DepartmentType d) { this.department = d; }
+    public double getSalary()                   { return salary; }
+    public void setSalary(double s)             { this.salary = s; }
+    public List<String> getCoursesTaught()      { return new ArrayList<>(coursesTaught); }
 
     @Override
     public String toString() {
-        return String.format("Instructor{id='%s', name='%s', department=%s}", 
-            instructorId, getFullName(), department);
+        return String.format("Instructor{id='%s', name='%s', department=%s}",
+                instructorId, getFullName(), department);
     }
 }

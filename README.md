@@ -1,190 +1,36 @@
-# University Course Management System - OOP1 Assignment
+# University Course Management System — OOP2
 
-## Project Overview
+## How to compile and run
 
-A comprehensive University Course Management System demonstrating Java 21 LTS features and advanced object-oriented programming concepts.
-
-## Application Domain: University Course Management
-
-This application manages a university's academic operations including:
-
-- **Student Management**: Enrollment, grades, academic records
-- **Course Management**: Course creation, scheduling, prerequisites
-- **Instructor Management**: Teaching assignments, office hours
-- **Department Operations**: Course offerings, faculty management
-- **Grade Processing**: Grade calculation, transcripts, GPA
-- **Enrollment System**: Course registration, waitlists, capacity management
-
-## Why This Domain?
-
-- **Relatable**: Students understand university operations
-- **Complex Relationships**: Students, courses, instructors, departments
-- **Rich Business Logic**: Grade calculations, prerequisites, enrollment rules
-- **Real-world Scenarios**: Demonstrates practical OOP design
-
-## Complete Java Features Demonstrated
-
-### Fundamentals ✅
-
-| Feature                   | Location                        | Description                                     |
-| ------------------------- | ------------------------------- | ----------------------------------------------- |
-| Classes                   | All model classes               | Person, Student, Instructor, Course, Department |
-| `this()` vs `this.`       | Person.java, Course.java        | Constructor chaining vs instance reference      |
-| Method Overloading        | Student.java, Course.java       | Multiple constructors and methods               |
-| Varargs                   | Department.java, GradeUtil.java | Variable argument methods                       |
-| LVTI                      | Main.java, Services             | `var` keyword usage                             |
-| Encapsulation             | All model classes               | Private fields with getters/setters             |
-| Interfaces                | Enrollable.java, Gradeable.java | Multiple interfaces                             |
-| Inheritance               | Person → Student/Instructor     | Class hierarchy                                 |
-| Overriding & Polymorphism | Student/Instructor classes      | Method overriding                               |
-| `super()` vs `super.`     | Student.java, Instructor.java   | Parent constructor vs parent method             |
-| Checked Exceptions        | EnrollmentException.java        | Custom checked exceptions                       |
-| Unchecked Exceptions      | InvalidGradeException.java      | Custom runtime exceptions                       |
-| Enums                     | Grade.java, Department.java     | Enumeration types                               |
-| Arrays                    | Course.java                     | Student arrays, grade arrays                    |
-| String API                | StringUtil.java                 | String manipulation                             |
-| StringBuilder             | Report generation               | Efficient string building                       |
-| List/ArrayList            | All service classes             | Collection usage                                |
-| Date API                  | Course.java, Student.java       | LocalDate, LocalDateTime                        |
-
-### Advanced Features ✅
-
-| Feature                   | Location                   | Description                  |
-| ------------------------- | -------------------------- | ---------------------------- |
-| Call-by-value             | EnrollmentService.java     | Defensive copying examples   |
-| Defensive Copying         | Student.java, Course.java  | Immutable collections        |
-| Private Interface Methods | Gradeable.java             | Helper methods in interfaces |
-| Default Interface Methods | Enrollable.java            | Default implementations      |
-| Static Interface Methods  | Gradeable.java             | Utility methods              |
-| Records                   | CourseSchedule, Enrollment | Immutable data carriers      |
-| Custom Immutable Type     | Transcript.java            | Fully immutable class        |
-| Lambdas (Predicate)       | StudentService.java        | Filtering with predicates    |
-| Final/Effectively Final   | Lambda examples            | Closure demonstrations       |
-| Method References         | Service classes            | Method reference usage       |
-| Switch Expressions        | GradeUtil.java             | Modern switch syntax         |
-| Pattern Matching          | Student.java               | instanceof patterns          |
-| Sealed Classes            | Person sealed class        | Restricted inheritance       |
-
-## Project Structure
-
-```
-university_course_management/
-├── README.md
-├── src/
-│   └── com/university/
-│       ├── Main.java                   # Application entry point
-│       ├── model/
-│       │   ├── Person.java             # Sealed abstract base class
-│       │   ├── Student.java            # Final student class
-│       │   ├── Instructor.java         # Final instructor class
-│       │   ├── Course.java             # Course entity
-│       │   ├── DepartmentType.java     # Department enum
-│       │   ├── Grade.java              # Grade enum with values
-│       │   ├── CourseSchedule.java     # Record for scheduling
-│       │   ├── Enrollment.java         # Record for enrollment
-│       │   ├── Transcript.java         # Immutable transcript
-│       │   ├── Enrollable.java         # Interface with default methods
-│       │   └── Gradeable.java          # Interface with static methods
-│       ├── service/
-│       │   ├── StudentService.java     # Student operations
-│       │   ├── CourseService.java      # Course management
-│       │   ├── EnrollmentService.java  # Enrollment processing
-│       │   └── GradeService.java       # Grade calculations
-│       ├── util/
-│       │   ├── DateUtil.java           # Date utilities
-│       │   ├── GradeUtil.java          # Grade utilities with switch
-│       │   └── ValidationUtil.java     # Input validation
-│       └── exception/
-│           ├── EnrollmentException.java    # Checked exception
-│           ├── InvalidGradeException.java  # Unchecked exception
-│           └── CourseFullException.java    # Checked exception
-```
-
-## Compilation and Execution
-
-### Prerequisites
-
-- Java 21 LTS or higher
-- No external dependencies (uses only Java Core API)
-
-### Compile
-
+### Standard build (Java 21+)
 ```bash
-cd university_course_management
-javac -d bin src/com/university/**/*.java src/com/university/*.java
+find src -name "*.java" > sources.txt
+javac -d out -sourcepath src @sources.txt
+java -cp out com.university.Main
 ```
 
-### Run
-
+### JEP 512 Compact Source File demo (Java 25 required)
 ```bash
-java -cp bin com.university.Main
+javac --enable-preview --release 25 QuickDemo.java
+java  --enable-preview QuickDemo
 ```
 
-### For Java 22/23 Features (if using preview features)
+## OOP2 Features — Menu Map
 
-```bash
-javac --enable-preview --release 22 -d bin src/com/university/**/*.java
-java --enable-preview -cp bin com.university.Main
-```
+| Menu | Feature | User Story |
+|------|---------|------------|
+| 10 | Streams: filter, map, sorted, distinct, limit, min, max, count, findFirst, findAny, allMatch, anyMatch, noneMatch, forEach, collect | US1–US4 |
+| 11 | Collectors: groupingBy, partitioningBy, toMap, counting, averagingDouble | US3 |
+| 12 | Concurrency: ExecutorService, Callable, Future, invokeAll | US5 |
+| 13 | NIO2 Export: Files.newBufferedWriter, Files.newDirectoryStream, Files.readAllLines | US6 |
+| 14 | NIO2 Import: Files.newBufferedReader, Files.exists, Path | US6 |
+| 15 | Localisation: Locale, NumberFormat, DateTimeFormatter, ResourceBundle | US7 |
+| 16 | Java 25: ScopedValue (simulated), Stream Gatherers (simulated) | US10–US11 |
+| 17 | Java 25 JEP 513: Flexible Constructor Bodies (documented in code) | US9 |
+| —  | Java 25 JEP 512: QuickDemo.java compact source file | US8 |
 
-## Key Design Decisions
+## Note on Java 25 features
 
-### 1. Sealed Class Hierarchy
-
-```
-Person (sealed)
-├── Student (final)
-└── Instructor (final)
-```
-
-This prevents unauthorized extensions while allowing controlled polymorphism.
-
-### 2. Records for Data Transfer
-
-Using records for `CourseSchedule` and `Enrollment` provides immutable, concise data carriers.
-
-### 3. Defensive Copying
-
-All collections returned from getters are copied to prevent external modification.
-
-### 4. Exception Hierarchy
-
-- `EnrollmentException` (checked) - for enrollment failures
-- `CourseFullException` (checked) - when course capacity reached
-- `InvalidGradeException` (unchecked) - for invalid grade values
-
-## Sample Output
-
-The application demonstrates:
-
-- Creating students and instructors
-- Enrolling students in courses
-- Recording and calculating grades
-- Generating transcripts
-- Filtering students using predicates
-- Pattern matching for type checking
-- Switch expressions for grade conversion
-
-## Testing Approach
-
-The Main.java file includes comprehensive demonstrations of:
-
-- All OOP features
-- Error handling scenarios
-- Edge cases
-- Polymorphic behavior
-
-## Author Information
-
-**Course**: Object-Oriented Programming 1
-**Institution**: Technological University of the Shannon (TUS)
-**Submission Date**: November 29, 2024
-**Java Version**: Java 21 LTS (with Java 22 preview features)
-
-## Additional Notes
-
-- All code is thoroughly commented
-- Follows Java naming conventions
-- Demonstrates industry best practices
-- No external libraries used (pure Java Core API)
-- Git repository included with consistent commits
+ScopedContext and StudentGatherers demonstrate the **logic and intent** of
+Java 25 APIs using Java 21-compatible code. The comments in each file show
+the exact Java 25 syntax. QuickDemo.java requires --enable-preview --release 25.
